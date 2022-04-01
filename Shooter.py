@@ -60,6 +60,8 @@ bulletImage = pygame.image.load("images/bullet.png")
 bulletRect = pygame.Rect(0, 0, bulletImage.get_width(), bulletImage.get_height())
 bulletPosList = []
 BULLETSPEED = 500
+FIRINGCOOLDOWN = 0.5
+timeSinceFire = 0
 # END for loop for bullet spawning
 
 # --------------------------------------
@@ -102,9 +104,14 @@ while running:
     playerRect.left = playerPos[0]
     playerRect.top = playerPos[1]
 
+    # Increase time since last bullet fired
+    timeSinceFire += frameSec
+
     # Spawn bullets if the player presses space
-    if keys[pygame.K_SPACE] and playerAlive:
+    if keys[pygame.K_SPACE] and playerAlive and timeSinceFire >= FIRINGCOOLDOWN:
         bulletPosList.append([playerPos[0],playerPos[1]])
+        timeSinceFire = 0
+    # END if for firing
 
     # Update bullets
     for bulletPos in bulletPosList[:]:
@@ -130,8 +137,6 @@ while running:
             if pygame.Rect.colliderect(bulletRect,enemyRect):
                 # Remove the enemy from the list
                 enemyPosList.remove(enemyPos)
-                # Remove the bullet too!
-                bulletPosList.remove(bulletPos)
             # END if for collision
             
         # END for loop for enemy/bullet collision
