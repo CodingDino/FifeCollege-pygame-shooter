@@ -57,6 +57,7 @@ for i in range(NUM_ENEMIES):
 
 # Set up bullets
 bulletImage = pygame.image.load("images/bullet.png")
+bulletRect = pygame.Rect(0, 0, bulletImage.get_width(), bulletImage.get_height())
 bulletPosList = []
 BULLETSPEED = 500
 # END for loop for bullet spawning
@@ -114,6 +115,26 @@ while running:
         if bulletPos[1] < -bulletImage.get_height():
             bulletPosList.remove(bulletPos)
         # END off screen if
+
+        # Update bullet rect
+        bulletRect.left = bulletPos[0]
+        bulletRect.top = bulletPos[1]
+
+        # Loop through enemies and check if our bullet has hit one
+        for enemyPos in enemyPosList[:]:
+            # Update the enemy rectangle
+            enemyRect.left = enemyPos[0]
+            enemyRect.top = enemyPos[1]
+
+            # If a bullet collides with an enemy...
+            if pygame.Rect.colliderect(bulletRect,enemyRect):
+                # Remove the enemy from the list
+                enemyPosList.remove(enemyPos)
+                # Remove the bullet too!
+                bulletPosList.remove(bulletPos)
+            # END if for collision
+            
+        # END for loop for enemy/bullet collision
     # END for loop for updating bullets
         
     # Update enemies
