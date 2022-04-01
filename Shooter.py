@@ -56,6 +56,12 @@ for i in range(NUM_ENEMIES):
 # END for loop for enemy spawning
 
 
+# Set up bullets
+bulletImage = pygame.image.load("images/bullet.png")
+bulletPosList = []
+BULLETSPEED = 400
+# END for loop for bullet spawning
+
 # --------------------------------------
 
 
@@ -87,14 +93,30 @@ while running:
 
     # Process Movement
     # Scale move speed by time passed since the last frame for consistant movement
-    if keys[pygame.K_LEFT]:
+    if keys[pygame.K_LEFT] or keys[pygame.K_a]:
         playerPos[0] -= PLAYERSPEED * frameSec
-    if keys[pygame.K_RIGHT]:
+    if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
         playerPos[0] += PLAYERSPEED * frameSec
         
     # Move the player's rectangle based on the position variable
     playerRect.left = playerPos[0]
     playerRect.top = playerPos[1]
+
+    # Firing
+    if keys[pygame.K_SPACE] and playerAlive:
+        # Fire the bullet!
+        newBulletX = playerPos[0] + 20
+        newBulletY = playerPos[1]
+        bulletPosList.append([newBulletX,newBulletY])
+    # END if space pressed
+
+
+    # Update for bullets
+    for bulletPos in bulletPosList:
+        # Move bullet up
+        bulletPos[1] -= BULLETSPEED * frameSec
+    # END bullet loop
+    
 
     # Update enemies
     for enemyPos in enemyPosList:
@@ -141,6 +163,12 @@ while running:
     for enemyPos in enemyPosList:
         screen.blit(enemyImage,enemyPos)
     # END for loop for enemy drawing
+
+
+    # Draw all of the bullets
+    for bulletPos in bulletPosList:
+        screen.blit(bulletImage,bulletPos)
+    # END for loop for bullet drawing
         
     # Flip the display to put it all onscreen
     pygame.display.flip()
