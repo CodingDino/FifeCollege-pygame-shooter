@@ -87,9 +87,9 @@ while running:
 
     # Process Movement
     # Scale move speed by time passed since the last frame for consistant movement
-    if keys[pygame.K_LEFT]:
+    if keys[pygame.K_LEFT] or keys[pygame.K_a]:
         playerPos[0] -= PLAYERSPEED * frameSec
-    if keys[pygame.K_RIGHT]:
+    if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
         playerPos[0] += PLAYERSPEED * frameSec
         
     # Move the player's rectangle based on the position variable
