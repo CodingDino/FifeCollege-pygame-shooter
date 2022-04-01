@@ -1,10 +1,9 @@
 # --------------------------------------
 # Title: Shooter.py
-# Purpose: Final example pygame game
+# Purpose: An example shooting game 
 # Author: Sarah Herzog
 # Date: 01/04/2022
 # --------------------------------------
-
 
 
 # --------------------------------------
@@ -24,8 +23,8 @@ pygame.init()
 mainClock = pygame.time.Clock()
 
 # Set up the drawing window
-WINDOWWIDTH = 1000
-WINDOWHEIGHT = 1000
+WINDOWWIDTH = 700
+WINDOWHEIGHT = 700
 screen = pygame.display.set_mode([WINDOWWIDTH, WINDOWHEIGHT])
 pygame.display.set_caption('Shooter')
 
@@ -39,9 +38,23 @@ GREEN = (0, 255, 0)
 
 # Set up player
 playerImage = pygame.image.load("images/player.png")
-playerPos = [100, 100]
+playerPos = [WINDOWWIDTH/2 - playerImage.get_width()/2, WINDOWHEIGHT - 100]
 playerRect = pygame.Rect(playerPos[0], playerPos[1], playerImage.get_width(), playerImage.get_height())
-MOVESPEED = 300
+PLAYERSPEED = 300
+playerAlive = True
+
+# Set up enemies
+enemyImage = pygame.image.load("images/enemy.png")
+enemyRect = pygame.Rect(0, 0, enemyImage.get_width(), enemyImage.get_height())
+enemySpeed = 100
+enemyPosList = []
+NUM_ENEMIES = 5
+for i in range(NUM_ENEMIES):
+    newEnemyX = random.randint(0,WINDOWWIDTH-enemyImage.get_width()) #
+    newEnemyY = -enemyImage.get_height() # just barely above the screen
+    enemyPosList.append([newEnemyX,newEnemyY])
+# END for loop for enemy spawning
+
 
 # --------------------------------------
 
@@ -74,19 +87,40 @@ while running:
 
     # Process Movement
     # Scale move speed by time passed since the last frame for consistant movement
-    # Use our own position list for this so we can use decimal points!
     if keys[pygame.K_LEFT]:
-        playerPos[0] -= MOVESPEED * frameSec
+        playerPos[0] -= PLAYERSPEED * frameSec
     if keys[pygame.K_RIGHT]:
-        playerPos[0] += MOVESPEED * frameSec
-    if keys[pygame.K_UP]:
-        playerPos[1] -= MOVESPEED * frameSec
-    if keys[pygame.K_DOWN]:
-        playerPos[1] += MOVESPEED * frameSec
+        playerPos[0] += PLAYERSPEED * frameSec
         
     # Move the player's rectangle based on the position variable
     playerRect.left = playerPos[0]
     playerRect.top = playerPos[1]
+
+    # Update enemies
+    for enemyPos in enemyPosList:
+        # Move enemy down
+        enemyPos[1] += enemySpeed * frameSec
+        
+        # Update the enemy rectangle
+        enemyRect.left = enemyPos[0]
+        enemyRect.top = enemyPos[1]
+        
+        # Check if the enemy hit the player
+        if pygame.Rect.colliderect(playerRect,enemyRect):
+            # If so, kill the player!
+            playerAlive = False
+        # END if statement for collision
+
+        # Check if the enemy is off the screen
+        if enemyPos[1] > WINDOWHEIGHT:
+            # Reposition the enemy at the top of the screen
+            enemyPos[0] = random.randint(0,WINDOWWIDTH-enemyImage.get_width()) #
+            enemyPos[1] = -enemyImage.get_height() # just barely above the screen
+        # END if for enemy off screen check
+            
+    # END for loop for enemy update
+    
+    
     # ----------------------------------
 
     
@@ -97,9 +131,18 @@ while running:
     screen.fill(WHITE)
 
     # Draw Everything
-    screen.blit(playerImage,(playerPos[0],playerPos[1]))
 
-    # Flip the display
+    # Only draw the player if they are alive!
+    if (playerAlive) :
+        screen.blit(playerImage,playerPos)
+    # END if for player drawing
+
+    # Draw all of the enemies
+    for enemyPos in enemyPosList:
+        screen.blit(enemyImage,enemyPos)
+    # END for loop for enemy drawing
+        
+    # Flip the display to put it all onscreen
     pygame.display.flip()
     # ----------------------------------
 
