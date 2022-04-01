@@ -57,8 +57,13 @@ for i in range(NUM_ENEMIES):
 
 # Set up bullets
 bulletImage = pygame.image.load("images/bullet.png")
-bulletPos = [100, 100]
-
+bulletPosList = []
+NUM_BULLETS = 3
+for i in range(NUM_BULLETS):
+    newBulletX = random.randint(0,WINDOWWIDTH-bulletImage.get_width())
+    newBulletY = random.randint(0,WINDOWHEIGHT-bulletImage.get_height())
+    bulletPosList.append([newBulletX,newBulletY])
+# END for loop for bullet spawning
 
 # --------------------------------------
 
@@ -145,9 +150,12 @@ while running:
     for enemyPos in enemyPosList:
         screen.blit(enemyImage,enemyPos)
     # END for loop for enemy drawing
-        
-    screen.blit(bulletImage,bulletPos)
-        
+    
+    # Draw all of the bullets
+    for bulletPos in bulletPosList:
+        screen.blit(bulletImage,bulletPos)
+    # END for loop for enemy drawing
+
     # Flip the display to put it all onscreen
     pygame.display.flip()
     # ----------------------------------
