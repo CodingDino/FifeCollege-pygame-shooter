@@ -55,6 +55,10 @@ for i in range(NUM_ENEMIES):
     enemyPosList.append([newEnemyX,newEnemyY])
 # END for loop for enemy spawning
 
+# Set up bullets
+bulletImage = pygame.image.load("images/bullet.png")
+bulletPos = [100, 100]
+
 
 # --------------------------------------
 
@@ -141,6 +145,8 @@ while running:
     for enemyPos in enemyPosList:
         screen.blit(enemyImage,enemyPos)
     # END for loop for enemy drawing
+        
+    screen.blit(bulletImage,bulletPos)
         
     # Flip the display to put it all onscreen
     pygame.display.flip()
