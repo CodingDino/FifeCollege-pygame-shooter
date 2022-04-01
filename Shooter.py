@@ -58,6 +58,7 @@ for i in range(NUM_ENEMIES):
 # Set up bullets
 bulletImage = pygame.image.load("images/bullet.png")
 bulletPosList = []
+BULLETSPEED = 500
 # END for loop for bullet spawning
 
 # --------------------------------------
@@ -101,9 +102,20 @@ while running:
     playerRect.top = playerPos[1]
 
     # Spawn bullets if the player presses space
-    if keys[pygame.K_SPACE]:
+    if keys[pygame.K_SPACE] and playerAlive:
         bulletPosList.append([playerPos[0],playerPos[1]])
 
+    # Update bullets
+    for bulletPos in bulletPosList[:]:
+        # Move bullet up
+        bulletPos[1] -= BULLETSPEED * frameSec
+
+        # If it's gone off screen, remove it from the list
+        if bulletPos[1] < -bulletImage.get_height():
+            bulletPosList.remove(bulletPos)
+        # END off screen if
+    # END for loop for updating bullets
+        
     # Update enemies
     for enemyPos in enemyPosList:
         # Move enemy down
