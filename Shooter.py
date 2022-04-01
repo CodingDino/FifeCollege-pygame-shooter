@@ -14,6 +14,16 @@ import pygame, random
 
 
 # --------------------------------------
+# Spawning Function
+# --------------------------------------
+def spawn_enemy() :
+    newEnemyX = random.randint(0,WINDOWWIDTH-enemyImage.get_width()) #
+    newEnemyY = -enemyImage.get_height() # just barely above the screen
+    enemyPosList.append([newEnemyX,newEnemyY])
+# END spawn_enemy function
+
+
+# --------------------------------------
 # Initialisation and Setup
 # --------------------------------------
 # Initialize python so we can use it
@@ -50,9 +60,7 @@ enemySpeed = 100
 enemyPosList = []
 NUM_ENEMIES = 5
 for i in range(NUM_ENEMIES):
-    newEnemyX = random.randint(0,WINDOWWIDTH-enemyImage.get_width()) #
-    newEnemyY = -enemyImage.get_height() # just barely above the screen
-    enemyPosList.append([newEnemyX,newEnemyY])
+    spawn_enemy()
 # END for loop for enemy spawning
 
 # Set up bullets
