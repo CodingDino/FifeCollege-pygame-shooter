@@ -58,11 +58,6 @@ for i in range(NUM_ENEMIES):
 # Set up bullets
 bulletImage = pygame.image.load("images/bullet.png")
 bulletPosList = []
-NUM_BULLETS = 3
-for i in range(NUM_BULLETS):
-    newBulletX = random.randint(0,WINDOWWIDTH-bulletImage.get_width())
-    newBulletY = random.randint(0,WINDOWHEIGHT-bulletImage.get_height())
-    bulletPosList.append([newBulletX,newBulletY])
 # END for loop for bullet spawning
 
 # --------------------------------------
@@ -104,6 +99,10 @@ while running:
     # Move the player's rectangle based on the position variable
     playerRect.left = playerPos[0]
     playerRect.top = playerPos[1]
+
+    # Spawn bullets if the player presses space
+    if keys[pygame.K_SPACE]:
+        bulletPosList.append([playerPos[0],playerPos[1]])
 
     # Update enemies
     for enemyPos in enemyPosList:
