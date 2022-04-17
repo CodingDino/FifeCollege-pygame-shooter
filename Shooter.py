@@ -78,7 +78,9 @@ UIFont = pygame.freetype.Font("fonts/PressStart2P-Regular.ttf",24)
 score = 0
 scorePerEnemy = 100
 
-
+# Set up win condition
+scoreToWin = 200
+winGame = False
 # --------------------------------------
 
 
@@ -157,6 +159,11 @@ while running:
 
                 # Add to the score
                 score += scorePerEnemy
+
+                # Check if we won
+                if score >= scoreToWin :
+                    winGame = True
+                # END if for checking win state
             # END if for collision
             
         # END for loop for enemy/bullet collision
@@ -206,23 +213,37 @@ while running:
 
     # Draw Everything
 
-    # Only draw the player if they are alive!
-    if (playerAlive) :
-        screen.blit(playerImage,playerPos)
-    # END if for player drawing
+    # Draw items based on the game state
+    if winGame : #Player has won!
 
-    # Draw all of the enemies
-    for enemyPos in enemyPosList:
-        screen.blit(enemyImage,enemyPos)
-    # END for loop for enemy drawing
-    
-    # Draw all of the bullets
-    for bulletPos in bulletPosList:
-        screen.blit(bulletImage,bulletPos)
-    # END for loop for enemy drawing
+        #Draw win message
+        textRect = UIFont.get_rect("YOU WIN!")
+        UIFont.render_to(screen, (WINDOWWIDTH/2 - textRect.width/2, WINDOWHEIGHT/2 - textRect.height/2), "YOU WIN!", BLACK)
+
+    elif not playerAlive : #Player is dead
+
+        #Draw game over message
+        textRect = UIFont.get_rect("GAME OVER!")
+        UIFont.render_to(screen, (WINDOWWIDTH/2 - textRect.width/2, WINDOWHEIGHT/2 - textRect.height/2), "GAME OVER!", BLACK)
+
+    else : #Player is alive and has not yet won:
+        # Draw player
+        screen.blit(playerImage,playerPos)
+
+        # Draw all of the enemies
+        for enemyPos in enemyPosList:
+            screen.blit(enemyImage,enemyPos)
+        # END for loop for enemy drawing
+        
+        # Draw all of the bullets
+        for bulletPos in bulletPosList:
+            screen.blit(bulletImage,bulletPos)
+        # END for loop for enemy drawing
+        
+    # END if for checking game state
 
     # Draw the UI text
-    UIFont.render_to(screen, (10, 10), "Score: "+str(score), (0,0,0))
+    UIFont.render_to(screen, (10, 10), "Score: "+str(score), BLACK)
 
     # Flip the display to put it all onscreen
     pygame.display.flip()
