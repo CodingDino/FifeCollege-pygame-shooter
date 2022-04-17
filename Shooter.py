@@ -58,10 +58,10 @@ enemyImage = pygame.image.load("images/enemy.png")
 enemyRect = pygame.Rect(0, 0, enemyImage.get_width(), enemyImage.get_height())
 enemySpeed = 100
 enemyPosList = []
-NUM_ENEMIES = 5
-for i in range(NUM_ENEMIES):
-    spawn_enemy()
-# END for loop for enemy spawning
+enemySpawnCooldown = 3
+timeSinceSpawn = 0
+# Spawn a sing enemy to start with
+spawn_enemy()
 
 # Set up bullets
 bulletImage = pygame.image.load("images/bullet.png")
@@ -136,6 +136,8 @@ while running:
         bulletRect.top = bulletPos[1]
 
         # Loop through enemies and check if our bullet has hit one
+        # Note the special way of writing this for loop! It makes
+        # a copy of our list so we can remove things from it.
         for enemyPos in enemyPosList[:]:
             # Update the enemy rectangle
             enemyRect.left = enemyPos[0]
@@ -149,9 +151,18 @@ while running:
             
         # END for loop for enemy/bullet collision
     # END for loop for updating bullets
+
+    # Increase the time since last spawned an enemy
+    timeSinceSpawn += frameSec
+
+    # Is it time to spawn an enemy?
+    if timeSinceSpawn >= enemySpawnCooldown :
+        spawn_enemy()
+        timeSinceSpawn = 0
+    # END if for enemy spawning
         
     # Update enemies
-    for enemyPos in enemyPosList:
+    for enemyPos in enemyPosList[:]:
         # Move enemy down
         enemyPos[1] += enemySpeed * frameSec
         
@@ -167,9 +178,8 @@ while running:
 
         # Check if the enemy is off the screen
         if enemyPos[1] > WINDOWHEIGHT:
-            # Reposition the enemy at the top of the screen
-            enemyPos[0] = random.randint(0,WINDOWWIDTH-enemyImage.get_width()) #
-            enemyPos[1] = -enemyImage.get_height() # just barely above the screen
+            # Remove the enemy from the list
+            enemyPosList.remove(enemyPos)
         # END if for enemy off screen check
             
     # END for loop for enemy update
