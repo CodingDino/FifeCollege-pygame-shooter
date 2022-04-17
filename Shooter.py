@@ -9,7 +9,7 @@
 # --------------------------------------
 # Import Libraries
 # --------------------------------------
-import pygame, random
+import pygame, random, pygame.freetype
 # --------------------------------------
 
 
@@ -60,7 +60,7 @@ enemySpeed = 100
 enemyPosList = []
 enemySpawnCooldown = 3
 timeSinceSpawn = 0
-# Spawn a sing enemy to start with
+# Spawn a single enemy to start with
 spawn_enemy()
 
 # Set up bullets
@@ -70,7 +70,14 @@ bulletPosList = []
 BULLETSPEED = 500
 FIRINGCOOLDOWN = 0.5
 timeSinceFire = 0
-# END for loop for bullet spawning
+
+# Set up UI Font
+UIFont = pygame.freetype.Font("fonts/PressStart2P-Regular.ttf",24)
+
+# Set up Score
+score = 0
+scorePerEnemy = 100
+
 
 # --------------------------------------
 
@@ -147,6 +154,9 @@ while running:
             if pygame.Rect.colliderect(bulletRect,enemyRect):
                 # Remove the enemy from the list
                 enemyPosList.remove(enemyPos)
+
+                # Add to the score
+                score += scorePerEnemy
             # END if for collision
             
         # END for loop for enemy/bullet collision
@@ -210,6 +220,9 @@ while running:
     for bulletPos in bulletPosList:
         screen.blit(bulletImage,bulletPos)
     # END for loop for enemy drawing
+
+    # Draw the UI text
+    UIFont.render_to(screen, (10, 10), "Score: "+str(score), (0,0,0))
 
     # Flip the display to put it all onscreen
     pygame.display.flip()
