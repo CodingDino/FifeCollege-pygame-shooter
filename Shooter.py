@@ -81,6 +81,11 @@ scorePerEnemy = 100
 # Set up win condition
 scoreToWin = 200
 winGame = False
+
+# Set up health
+health = 100
+damagePerEnemy = 50
+
 # --------------------------------------
 
 
@@ -109,6 +114,11 @@ while running:
     # Get the frame time in miliseconds
     frameMs = mainClock.tick(60)
     frameSec = frameMs / 1000
+
+    # Pause the game if we won or lost
+    if not playerAlive or winGame :
+        frameSec = 0
+    # END if for game pause
 
     # Process Movement
     # Scale move speed by time passed since the last frame for consistant movement
@@ -189,8 +199,16 @@ while running:
         
         # Check if the enemy hit the player
         if pygame.Rect.colliderect(playerRect,enemyRect):
-            # If so, kill the player!
-            playerAlive = False
+            # Damage the player
+            health -= damagePerEnemy
+
+            # Is the player dead?
+            if health <= 0 :
+                playerAlive = False
+            # END if statement for player death
+
+            # Remove the enemy so it doesn't hit us twice
+            enemyPosList.remove(enemyPos)
         # END if statement for collision
 
         # Check if the enemy is off the screen
@@ -244,6 +262,9 @@ while running:
 
     # Draw the UI text
     UIFont.render_to(screen, (10, 10), "Score: "+str(score), BLACK)
+
+    textRect = UIFont.get_rect("Health: 9999")
+    UIFont.render_to(screen, (WINDOWWIDTH - 10 - textRect.width, 10), "Health: "+str(health), BLACK)
 
     # Flip the display to put it all onscreen
     pygame.display.flip()
