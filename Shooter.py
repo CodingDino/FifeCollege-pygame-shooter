@@ -14,6 +14,17 @@ import pygame, random
 
 
 # --------------------------------------
+# Spawning Function
+# --------------------------------------
+def spawn_enemy() :
+    newEnemyX = random.randint(0,WINDOWWIDTH-enemyImage.get_width()) #
+    newEnemyY = -enemyImage.get_height() # just barely above the screen
+    enemyPosList.append([newEnemyX,newEnemyY])
+# END function definition
+# --------------------------------------
+
+
+# --------------------------------------
 # Initialisation and Setup
 # --------------------------------------
 # Initialize python so we can use it
@@ -50,17 +61,19 @@ enemySpeed = 100
 enemyPosList = []
 NUM_ENEMIES = 5
 for i in range(NUM_ENEMIES):
-    newEnemyX = random.randint(0,WINDOWWIDTH-enemyImage.get_width()) #
-    newEnemyY = -enemyImage.get_height() # just barely above the screen
-    enemyPosList.append([newEnemyX,newEnemyY])
+    spawn_enemy()
 # END for loop for enemy spawning
+SPAWNCOOLDOWN = 2
+timeSinceSpawn = 0
 
 
 # Set up bullets
 bulletImage = pygame.image.load("images/bullet.png")
+bulletRect = pygame.Rect(0,0, bulletImage.get_width(), bulletImage.get_height())
 bulletPosList = []
 BULLETSPEED = 400
-# END for loop for bullet spawning
+FIRINGCOOLDOWN = 0.5
+timeSinceFire = 0
 
 # --------------------------------------
 
@@ -102,12 +115,17 @@ while running:
     playerRect.left = playerPos[0]
     playerRect.top = playerPos[1]
 
+    # Increase time since last bullet was fire
+    # based on how much time passed this frame
+    timeSinceFire += frameSec
+        
     # Firing
-    if keys[pygame.K_SPACE] and playerAlive:
+    if keys[pygame.K_SPACE] and playerAlive and timeSinceFire >= FIRINGCOOLDOWN:
         # Fire the bullet!
         newBulletX = playerPos[0] + 20
         newBulletY = playerPos[1]
         bulletPosList.append([newBulletX,newBulletY])
+        timeSinceFire = 0
     # END if space pressed
 
 
@@ -115,8 +133,37 @@ while running:
     for bulletPos in bulletPosList:
         # Move bullet up
         bulletPos[1] -= BULLETSPEED * frameSec
+
+        # Update Bullet Rectangle
+        bulletRect.left = bulletPos[0]
+        bulletRect.top = bulletPos[1]
+
+        # Loop through all enemies and check if THIS
+        # particular bullet has hit each enemy
+        for enemyPos in enemyPosList[:]:
+
+            # Update enemy rectangle
+            enemyRect.left = enemyPos[0]
+            enemyRect.top = enemyPos[1]
+
+            # If a bullet collides with an enemy...
+            if pygame.Rect.colliderect(bulletRect,enemyRect) :
+                # Remove THIS enemy from the list
+                enemyPosList.remove(enemyPos)
+            # END if for bullet/enemy collision
+            
+        # END enemy loop (for bullet/enemy collision)
+        
     # END bullet loop
     
+    # Add to time since last enemy spawned
+    timeSinceSpawn += frameSec
+
+    # Check if it is time to spawn a new enemy
+    if timeSinceSpawn >= SPAWNCOOLDOWN :
+        spawn_enemy()
+        timeSinceSpawn = 0
+    # END if for checking enemy spawn
 
     # Update enemies
     for enemyPos in enemyPosList:
