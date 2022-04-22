@@ -9,7 +9,7 @@
 # --------------------------------------
 # Import Libraries
 # --------------------------------------
-import pygame, random
+import pygame, random, pygame.freetype
 # --------------------------------------
 
 
@@ -75,6 +75,21 @@ BULLETSPEED = 400
 FIRINGCOOLDOWN = 0.5
 timeSinceFire = 0
 
+# Set up UI Font
+UIFont = pygame.freetype.Font("fonts/PressStart2P-Regular.ttf",24)
+
+# Set up Score
+score = 0
+scorePerEnemy = 100
+
+# Set up win condition
+scoreToWin = 200
+winGame = False
+
+# Set up health
+health = 50
+damagePerEnemy = 30
+
 # --------------------------------------
 
 
@@ -103,6 +118,11 @@ while running:
     # Get the frame time in miliseconds
     frameMs = mainClock.tick(60)
     frameSec = frameMs / 1000
+
+    # Pause the game if we won or lost
+    if not playerAlive or winGame :
+        frameSec = 0
+    # END if for game pause
 
     # Process Movement
     # Scale move speed by time passed since the last frame for consistant movement
@@ -150,6 +170,14 @@ while running:
             if pygame.Rect.colliderect(bulletRect,enemyRect) :
                 # Remove THIS enemy from the list
                 enemyPosList.remove(enemyPos)
+
+                score += scorePerEnemy
+
+                # Check if we won!
+                if score >= scoreToWin :
+                    winGame = True
+                # END if for checking if we won
+
             # END if for bullet/enemy collision
             
         # END enemy loop (for bullet/enemy collision)
@@ -176,8 +204,17 @@ while running:
         
         # Check if the enemy hit the player
         if pygame.Rect.colliderect(playerRect,enemyRect):
-            # If so, kill the player!
-            playerAlive = False
+            # Deal damage to the player
+            health -= damagePerEnemy
+
+            # Get rid of the enemy
+            enemyPosList.remove(enemyPos)
+
+            # Did they die?
+            if health <= 0:
+                # If so, kill the player!
+                playerAlive = False
+            # END if for health
         # END if statement for collision
 
         # Check if the enemy is off the screen
@@ -201,21 +238,40 @@ while running:
 
     # Draw Everything
 
-    # Only draw the player if they are alive!
-    if (playerAlive) :
+    # Draw items based on the game state
+    if winGame : # Player has won!
+
+        textRect = UIFont.get_rect("YOU WIN!")
+        
+        UIFont.render_to(screen, (WINDOWWIDTH/2-textRect.width/2, WINDOWHEIGHT/2-textRect.height/2), "YOU WIN!", BLACK )
+
+    elif not playerAlive : # Player has lost!
+
+        textRect = UIFont.get_rect("GAME OVER!")
+        UIFont.render_to(screen, (WINDOWWIDTH/2-textRect.width/2, WINDOWHEIGHT/2-textRect.height/2), "GAME OVER!", BLACK )
+
+    else :
+        
         screen.blit(playerImage,playerPos)
-    # END if for player drawing
 
-    # Draw all of the enemies
-    for enemyPos in enemyPosList:
-        screen.blit(enemyImage,enemyPos)
-    # END for loop for enemy drawing
+        # Draw all of the enemies
+        for enemyPos in enemyPosList:
+            screen.blit(enemyImage,enemyPos)
+        # END for loop for enemy drawing
+        
+        # Draw all of the bullets
+        for bulletPos in bulletPosList:
+            screen.blit(bulletImage,bulletPos)
+        # END for loop for bullet drawing
 
+    # END if for game state drawing
 
-    # Draw all of the bullets
-    for bulletPos in bulletPosList:
-        screen.blit(bulletImage,bulletPos)
-    # END for loop for bullet drawing
+    # Draw the UI Text
+    UIFont.render_to(screen, (10,10), "Score: "+str(score), (0, 0, 0) )
+
+    # Draw the UI Text
+    UIFont.render_to(screen, (10,50), "Health: "+str(health), (0, 0, 0) )
+
         
     # Flip the display to put it all onscreen
     pygame.display.flip()
