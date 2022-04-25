@@ -9,7 +9,7 @@
 # --------------------------------------
 # Import Libraries
 # --------------------------------------
-import pygame, random, pygame.freetype
+import pygame, random, pygame.freetype, math
 # --------------------------------------
 
 
@@ -67,7 +67,12 @@ spawn_enemy()
 bulletImage = pygame.image.load("images/bullet.png")
 bulletRect = pygame.Rect(0, 0, bulletImage.get_width(), bulletImage.get_height())
 bulletPosList = []
+<<<<<<< Updated upstream
 BULLETSPEED = 500
+=======
+bulletDirList = []
+BULLETSPEED = 400
+>>>>>>> Stashed changes
 FIRINGCOOLDOWN = 0.5
 timeSinceFire = 0
 
@@ -85,6 +90,11 @@ winGame = False
 # Set up health
 health = 100
 damagePerEnemy = 50
+
+# Set up player rotation
+mousePos = (0,0)
+firingDir = (0,-1)
+playerAngle = 0
 
 # --------------------------------------
 
@@ -126,13 +136,21 @@ while running:
         playerPos[0] -= PLAYERSPEED * frameSec
     if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
         playerPos[0] += PLAYERSPEED * frameSec
-        
-    # Move the player's rectangle based on the position variable
-    playerRect.left = playerPos[0]
-    playerRect.top = playerPos[1]
+
+    # Rotate to face the mouse
+    mousePos = pygame.mouse.get_pos()
+    firingDir = (mousePos[0]-playerPos[0],mousePos[1]-playerPos[1])
+    firingMag = math.sqrt(firingDir[0]*firingDir[0]+firingDir[1]*firingDir[1])
+    firingDir = (firingDir[0]/firingMag, firingDir[1]/firingMag)
+    angle = 270-math.atan2(firingDir[1],firingDir[0])*180/math.pi
+    playerImageRot = pygame.transform.rotate(playerImage,angle)
+
+    # Get new rect from rotated image and use position variable
+    playerRect = playerImageRot.get_rect(center = playerPos)
 
     # Increase time since last bullet fired
     timeSinceFire += frameSec
+<<<<<<< Updated upstream
 
     # Spawn bullets if the player presses space
     if keys[pygame.K_SPACE] and playerAlive and timeSinceFire >= FIRINGCOOLDOWN:
@@ -144,6 +162,27 @@ while running:
     for bulletPos in bulletPosList[:]:
         # Move bullet up
         bulletPos[1] -= BULLETSPEED * frameSec
+=======
+    
+    # Firing
+    if keys[pygame.K_SPACE] and playerAlive and timeSinceFire >= FIRINGCOOLDOWN:
+        # Fire the bullet!
+        newBulletX = playerPos[0] + 20
+        newBulletY = playerPos[1]
+        bulletPosList.append([newBulletX,newBulletY])
+        bulletDirList.append(firingDir)
+        timeSinceFire = 0
+    # END if space pressed
+    
+    # Update for bullets
+    for i in range(len(bulletPosList)):
+        bulletPos = bulletPosList[i]
+        bulletDir = bulletDirList[i]
+        
+        # Move bullet in the correct direction
+        bulletPos[0] += BULLETSPEED * frameSec * bulletDir[0]
+        bulletPos[1] += BULLETSPEED * frameSec * bulletDir[1]
+>>>>>>> Stashed changes
 
         # If it's gone off screen, remove it from the list
         if bulletPos[1] < -bulletImage.get_height():
@@ -186,8 +225,13 @@ while running:
     if timeSinceSpawn >= enemySpawnCooldown :
         spawn_enemy()
         timeSinceSpawn = 0
+<<<<<<< Updated upstream
     # END if for enemy spawning
         
+=======
+    # END if for checking enemy spawn
+    
+>>>>>>> Stashed changes
     # Update enemies
     for enemyPos in enemyPosList[:]:
         # Move enemy down
@@ -244,9 +288,15 @@ while running:
         textRect = UIFont.get_rect("GAME OVER!")
         UIFont.render_to(screen, (WINDOWWIDTH/2 - textRect.width/2, WINDOWHEIGHT/2 - textRect.height/2), "GAME OVER!", BLACK)
 
+<<<<<<< Updated upstream
     else : #Player is alive and has not yet won:
         # Draw player
         screen.blit(playerImage,playerPos)
+=======
+    else :
+        
+        screen.blit(playerImageRot,playerRect)
+>>>>>>> Stashed changes
 
         # Draw all of the enemies
         for enemyPos in enemyPosList:
