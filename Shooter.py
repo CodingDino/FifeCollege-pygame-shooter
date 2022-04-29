@@ -99,6 +99,15 @@ fireSound = pygame.mixer.Sound("audio/fire.ogg")
 pygame.mixer.music.load("audio/music.ogg")
 pygame.mixer.music.play(0)
 
+# Example dino animation
+dinoAnimRun = [
+    pygame.image.load("images/dino-run-1.png"),
+    pygame.image.load("images/dino-run-2.png")
+]
+dinoAnimIndex = 0
+dinoAnimFrameTime = 0.5
+timeSinceDinoAnim = 0
+
 # --------------------------------------
 
 
@@ -245,6 +254,21 @@ while running:
         # END if for enemy off screen check
             
     # END for loop for enemy update
+
+    # Update animation
+    timeSinceDinoAnim += frameSec
+    # Is it time to change the animation image?
+    if timeSinceDinoAnim >= dinoAnimFrameTime :
+        timeSinceDinoAnim = 0
+        # Go to the next frame in the animation
+        dinoAnimIndex += 1
+        # If we have gone past the last frame in the animation...
+        if dinoAnimIndex >= len(dinoAnimRun) :
+            # ... Then loop the animation back to the beginning
+            # (or take some other action if desired)
+            dinoAnimIndex = 0
+        # END if for checking last frame
+    # END if for checking animation
     
     
     # ----------------------------------
@@ -288,10 +312,13 @@ while running:
     # END if for checking game state
 
     # Draw the UI text
-    UIFont.render_to(screen, (10, 10), "Score: "+str(score), BLACK)
+    UIFont.render_to(screen, (10, 10), "Score: "+str(dinoAnimIndex), BLACK)
 
     textRect = UIFont.get_rect("Health: 9999")
-    UIFont.render_to(screen, (WINDOWWIDTH - 10 - textRect.width, 10), "Health: "+str(health), BLACK)
+    UIFont.render_to(screen, (WINDOWWIDTH - 10 - textRect.width, 10), "Health: "+str(timeSinceDinoAnim), BLACK)
+
+    # Draw example dino animation
+    screen.blit(dinoAnimRun[dinoAnimIndex],(0,0))
 
     # Flip the display to put it all onscreen
     pygame.display.flip()
