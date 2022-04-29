@@ -67,12 +67,8 @@ spawn_enemy()
 bulletImage = pygame.image.load("images/bullet.png")
 bulletRect = pygame.Rect(0, 0, bulletImage.get_width(), bulletImage.get_height())
 bulletPosList = []
-<<<<<<< Updated upstream
-BULLETSPEED = 500
-=======
 bulletDirList = []
 BULLETSPEED = 400
->>>>>>> Stashed changes
 FIRINGCOOLDOWN = 0.5
 timeSinceFire = 0
 
@@ -150,19 +146,8 @@ while running:
 
     # Increase time since last bullet fired
     timeSinceFire += frameSec
-<<<<<<< Updated upstream
 
-    # Spawn bullets if the player presses space
-    if keys[pygame.K_SPACE] and playerAlive and timeSinceFire >= FIRINGCOOLDOWN:
-        bulletPosList.append([playerPos[0],playerPos[1]])
-        timeSinceFire = 0
-    # END if for firing
 
-    # Update bullets
-    for bulletPos in bulletPosList[:]:
-        # Move bullet up
-        bulletPos[1] -= BULLETSPEED * frameSec
-=======
     
     # Firing
     if keys[pygame.K_SPACE] and playerAlive and timeSinceFire >= FIRINGCOOLDOWN:
@@ -182,7 +167,6 @@ while running:
         # Move bullet in the correct direction
         bulletPos[0] += BULLETSPEED * frameSec * bulletDir[0]
         bulletPos[1] += BULLETSPEED * frameSec * bulletDir[1]
->>>>>>> Stashed changes
 
         # If it's gone off screen, remove it from the list
         if bulletPos[1] < -bulletImage.get_height():
@@ -225,13 +209,8 @@ while running:
     if timeSinceSpawn >= enemySpawnCooldown :
         spawn_enemy()
         timeSinceSpawn = 0
-<<<<<<< Updated upstream
-    # END if for enemy spawning
-        
-=======
     # END if for checking enemy spawn
     
->>>>>>> Stashed changes
     # Update enemies
     for enemyPos in enemyPosList[:]:
         # Move enemy down
@@ -288,15 +267,9 @@ while running:
         textRect = UIFont.get_rect("GAME OVER!")
         UIFont.render_to(screen, (WINDOWWIDTH/2 - textRect.width/2, WINDOWHEIGHT/2 - textRect.height/2), "GAME OVER!", BLACK)
 
-<<<<<<< Updated upstream
     else : #Player is alive and has not yet won:
-        # Draw player
-        screen.blit(playerImage,playerPos)
-=======
-    else :
-        
+        # Draw player        
         screen.blit(playerImageRot,playerRect)
->>>>>>> Stashed changes
 
         # Draw all of the enemies
         for enemyPos in enemyPosList:
