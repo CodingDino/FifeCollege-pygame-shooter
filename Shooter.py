@@ -112,6 +112,10 @@ timeSinceDinoAnim = 0
 boxImage = pygame.image.load("images/box.png")
 boxRect = pygame.Rect(300, 300, boxImage.get_width(), boxImage.get_height())
 
+# Camera stuff
+cameraOffset = [WINDOWWIDTH/2, WINDOWHEIGHT/2] # Used to determine where the player will be on the screen for player follow
+cameraPos = playerPos   # Assumes camera centred on player, change as desired
+
 # --------------------------------------
 
 
@@ -159,7 +163,7 @@ while running:
 
     # Rotate to face the mouse
     mousePos = pygame.mouse.get_pos()
-    firingDir = (mousePos[0]-playerPos[0],mousePos[1]-playerPos[1])
+    firingDir = (mousePos[0]-(playerPos[0]-cameraPos[0]),mousePos[1]-(playerPos[1]-cameraPos[1]))
     firingMag = math.sqrt(firingDir[0]*firingDir[0]+firingDir[1]*firingDir[1])
     firingDir = (firingDir[0]/firingMag, firingDir[1]/firingMag)
     angle = 270-math.atan2(firingDir[1],firingDir[0])*180/math.pi
@@ -298,10 +302,11 @@ while running:
                 playerPos[1] -= yOverlap
             else:
                 playerPos[1] += yOverlap
-
-        
-        
     # END if for box collisions
+
+    # Update camera position based on player position
+    cameraPos= (playerRect.centerx -WINDOWWIDTH/2,playerRect.centery-WINDOWHEIGHT/2)
+
     
     # ----------------------------------
 
@@ -328,21 +333,24 @@ while running:
         UIFont.render_to(screen, (WINDOWWIDTH/2 - textRect.width/2, WINDOWHEIGHT/2 - textRect.height/2), "GAME OVER!", BLACK)
 
     else : #Player is alive and has not yet won:
+
+        
+        
         # Draw player        
-        screen.blit(playerImageRot,playerRect)
+        screen.blit(playerImageRot,(playerRect.left-cameraPos[0],playerRect.top-cameraPos[1]))
 
         # Draw all of the enemies
         for enemyPos in enemyPosList:
-            screen.blit(enemyImage,enemyPos)
+            screen.blit(enemyImage,(enemyPos[0]-cameraPos[0],enemyPos[1]-cameraPos[1]))
         # END for loop for enemy drawing
         
         # Draw all of the bullets
         for bulletPos in bulletPosList:
-            screen.blit(bulletImage,bulletPos)
+            screen.blit(bulletImage,(bulletPos[0]-cameraPos[0],bulletPos[1]-cameraPos[1]))
         # END for loop for enemy drawing
 
         # Draw box
-        screen.blit(boxImage, boxRect)
+        screen.blit(boxImage, (boxRect.left-cameraPos[0],boxRect.top-cameraPos[1]))
         
     # END if for checking game state
 
