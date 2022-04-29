@@ -48,11 +48,19 @@ WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 
 # Set up player
-playerImage = pygame.image.load("images/player.png")
-playerPos = [WINDOWWIDTH/2 - playerImage.get_width()/2, WINDOWHEIGHT - 100]
+playerRunAnim = [
+    pygame.image.load("images/player_walk1.png"),
+    pygame.image.load("images/player_walk2.png")
+]
+playerCurrentAnim = playerRunAnim
+playerImage = playerCurrentAnim[0]
+playerPos = [WINDOWWIDTH/2 - playerImage.get_width()/2, WINDOWHEIGHT - 300]
 playerRect = pygame.Rect(playerPos[0], playerPos[1], playerImage.get_width(), playerImage.get_height())
 PLAYERSPEED = 300
 playerAlive = True
+playerAnimIndex = 0
+playerAnimFrameTime = 0.2
+timeSincePlayerAnim = 0
 
 # Set up enemies
 enemyImage = pygame.image.load("images/enemy.png")
@@ -89,6 +97,13 @@ winGame = False
 # Set up health
 health = 50
 damagePerEnemy = 30
+
+# Set up sound effects
+fireSound = pygame.mixer.Sound("audio/fire.ogg")
+
+# Set up and play music
+pygame.mixer.music.load("audio/music.mp3")
+pygame.mixer.music.play(0)
 
 # --------------------------------------
 
@@ -146,6 +161,7 @@ while running:
         newBulletY = playerPos[1]
         bulletPosList.append([newBulletX,newBulletY])
         timeSinceFire = 0
+        pygame.mixer.Sound.play(fireSound)
     # END if space pressed
 
 
@@ -214,6 +230,7 @@ while running:
             if health <= 0:
                 # If so, kill the player!
                 playerAlive = False
+                pygame.mixer.music.stop()
             # END if for health
         # END if statement for collision
 
@@ -225,7 +242,22 @@ while running:
         # END if for enemy off screen check
             
     # END for loop for enemy update
-    
+
+
+    # Update animation
+    timeSincePlayerAnim += frameSec
+    # If it's time to switch frames...
+    if timeSincePlayerAnim >= playerAnimFrameTime:
+        timeSincePlayerAnim = 0
+        # Switch frames!
+        playerAnimIndex += 1
+        # Did we go past the last frame?
+        if playerAnimIndex >= len(playerCurrentAnim):
+            # Loop back to the first frame!
+            playerAnimIndex = 0
+        # END if for last frame check
+        playerImage = playerCurrentAnim[playerAnimIndex]
+    # END if for frame switching
     
     # ----------------------------------
 
