@@ -108,6 +108,10 @@ dinoAnimIndex = 0
 dinoAnimFrameTime = 0.5
 timeSinceDinoAnim = 0
 
+# Box for solid collisions
+boxImage = pygame.image.load("images/box.png")
+boxRect = pygame.Rect(300, 300, boxImage.get_width(), boxImage.get_height())
+
 # --------------------------------------
 
 
@@ -148,6 +152,10 @@ while running:
         playerPos[0] -= PLAYERSPEED * frameSec
     if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
         playerPos[0] += PLAYERSPEED * frameSec
+    if keys[pygame.K_RIGHT] or keys[pygame.K_w]:
+        playerPos[1] -= PLAYERSPEED * frameSec
+    if keys[pygame.K_RIGHT] or keys[pygame.K_s]:
+        playerPos[1] += PLAYERSPEED * frameSec
 
     # Rotate to face the mouse
     mousePos = pygame.mouse.get_pos()
@@ -269,7 +277,31 @@ while running:
             dinoAnimIndex = 0
         # END if for checking last frame
     # END if for checking animation
-    
+
+
+    # Solid collision with box
+    if pygame.Rect.colliderect(playerRect,boxRect):
+        # Determine the overlap between these two objects
+        xOverlap = min(playerRect.right - boxRect.left, boxRect.right - playerRect.left)
+        yOverlap = min(playerRect.bottom - boxRect.top, boxRect.bottom - playerRect.top)
+
+        # The smaller overlap will be the direction we move
+        # We move based on the direction of the player and
+        # the amount overlapped
+        if xOverlap < yOverlap :
+            if playerRect.left < boxRect.left :
+                playerPos[0] -= xOverlap
+            else:
+                playerPos[0] += xOverlap
+        else:
+            if playerRect.top < boxRect.top :
+                playerPos[1] -= yOverlap
+            else:
+                playerPos[1] += yOverlap
+
+        
+        
+    # END if for box collisions
     
     # ----------------------------------
 
@@ -308,17 +340,20 @@ while running:
         for bulletPos in bulletPosList:
             screen.blit(bulletImage,bulletPos)
         # END for loop for enemy drawing
+
+        # Draw box
+        screen.blit(boxImage, boxRect)
         
     # END if for checking game state
 
     # Draw the UI text
-    UIFont.render_to(screen, (10, 10), "Score: "+str(dinoAnimIndex), BLACK)
+    UIFont.render_to(screen, (10, 10), "Score: "+str(score), BLACK)
 
     textRect = UIFont.get_rect("Health: 9999")
-    UIFont.render_to(screen, (WINDOWWIDTH - 10 - textRect.width, 10), "Health: "+str(timeSinceDinoAnim), BLACK)
+    UIFont.render_to(screen, (WINDOWWIDTH - 10 - textRect.width, 10), "Health: "+str(health), BLACK)
 
     # Draw example dino animation
-    screen.blit(dinoAnimRun[dinoAnimIndex],(0,0))
+    #screen.blit(dinoAnimRun[dinoAnimIndex],(0,0))
 
     # Flip the display to put it all onscreen
     pygame.display.flip()
