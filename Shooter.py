@@ -92,6 +92,13 @@ mousePos = (0,0)
 firingDir = (0,-1)
 playerAngle = 0
 
+# Set up sound effects
+fireSound = pygame.mixer.Sound("audio/fire.ogg")
+
+# Set up and play music
+pygame.mixer.music.load("audio/music.ogg")
+pygame.mixer.music.play(0)
+
 # --------------------------------------
 
 
@@ -157,6 +164,7 @@ while running:
         bulletPosList.append([newBulletX,newBulletY])
         bulletDirList.append(firingDir)
         timeSinceFire = 0
+        pygame.mixer.Sound.play(fireSound)
     # END if space pressed
     
     # Update for bullets
@@ -167,11 +175,6 @@ while running:
         # Move bullet in the correct direction
         bulletPos[0] += BULLETSPEED * frameSec * bulletDir[0]
         bulletPos[1] += BULLETSPEED * frameSec * bulletDir[1]
-
-        # If it's gone off screen, remove it from the list
-        if bulletPos[1] < -bulletImage.get_height():
-            bulletPosList.remove(bulletPos)
-        # END off screen if
 
         # Update bullet rect
         bulletRect.left = bulletPos[0]
@@ -228,6 +231,7 @@ while running:
             # Is the player dead?
             if health <= 0 :
                 playerAlive = False
+                pygame.mixer.music.stop()
             # END if statement for player death
 
             # Remove the enemy so it doesn't hit us twice
